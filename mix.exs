@@ -1,6 +1,8 @@
 defmodule PhoenixAssetPipeline.MixProject do
   use Mix.Project
 
+  alias PhoenixAssetPipeline.Application
+
   @version "0.1.0"
 
   @description """
@@ -26,6 +28,7 @@ defmodule PhoenixAssetPipeline.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      mod: {Application, []},
       extra_applications: [:logger]
     ]
   end
@@ -46,6 +49,7 @@ defmodule PhoenixAssetPipeline.MixProject do
       {:dialyxir, "~> 1.0.0-rc.7", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
       {:fastglobal, "~> 1.0"},
+      {:file_system, "~> 0.2.7"},
       {:phoenix_html, "~> 2.13"},
       {:plug, "~> 1.8"},
       {:sass_compiler, "~> 0.1.0"}

@@ -10,34 +10,15 @@ defmodule PhoenixAssetPipeline do
 
   use Phoenix.HTML
 
-  @stylesheets_path "assets/stylesheets"
+  alias PhoenixAssetPipeline.Javascript
+  alias PhoenixAssetPipeline.Stylesheet
 
   def style_tag(path) do
-    content_tag(:style, raw(get_css(path)))
+    content_tag(:style, path |> Stylesheet.new() |> raw)
   end
 
-  defp generate_css(sass) when sass == "", do: {:ok, sass}
-
-  defp generate_css(sass) do
-    Sass.compile(sass, %{include_paths: [@stylesheets_path], is_indented_syntax: true})
-  end
-
-  defp get_css(path) do
-    compiled_styles = FastGlobal.get(:stylesheet_paths) || []
-
-    case Enum.member?(compiled_styles, path) do
-      true ->
-        FastGlobal.get("css_#{path}")
-
-      false ->
-        with {:ok, sass} <- File.read("#{@stylesheets_path}/#{path}.sass"),
-             {:ok, css} <- generate_css(sass) do
-          FastGlobal.put("css_#{path}", css)
-          FastGlobal.put(:stylesheet_paths, [path | compiled_styles])
-          css
-        else
-          {:error, msg} -> raise msg
-        end
-    end
+  def script_tag(_conn, path) do
+    %{async: async, src: src, integrity: integrity} = Javascript.new(path)
+    content_tag(:script, "", async: async, src: src, integrity: integrity)
   end
 end
