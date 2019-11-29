@@ -2,11 +2,11 @@ defmodule PhoenixAssetPipeline.Stylesheet do
   @stylesheets_path "assets/stylesheets"
 
   def new(path) do
-    stylesheet_paths = FastGlobal.get(:stylesheet_paths) || []
+    css_paths = FastGlobal.get(:css_paths) || []
 
-    case Enum.member?(stylesheet_paths, path) do
+    case Enum.member?(css_paths, path) do
       true -> FastGlobal.get("css_#{path}")
-      false -> generate_css(path, stylesheet_paths)
+      false -> generate_css(path, css_paths)
     end
   end
 
@@ -18,11 +18,11 @@ defmodule PhoenixAssetPipeline.Stylesheet do
     Sass.compile(sass, %{include_paths: [@stylesheets_path], is_indented_syntax: true})
   end
 
-  defp generate_css(path, stylesheet_paths) do
+  defp generate_css(path, css_paths) do
     with {:ok, sass} <- File.read("#{@stylesheets_path}/#{path}.sass"),
          {:ok, css} <- compile_sass(sass) do
       FastGlobal.put("css_#{path}", css)
-      FastGlobal.put(:stylesheet_paths, [path | stylesheet_paths])
+      FastGlobal.put(:css_paths, [path | css_paths])
       css
     else
       {:error, msg} -> raise msg

@@ -1,4 +1,4 @@
-defmodule PhoenixAssetPipeline.FileWatcher do
+defmodule PhoenixAssetPipeline.Watcher do
   use GenServer
 
   alias PhoenixAssetPipeline.Stylesheet
@@ -14,10 +14,14 @@ defmodule PhoenixAssetPipeline.FileWatcher do
   end
 
   def handle_info(
-        {:file_event, watcher_pid, {_path, _events}},
+        {:file_event, watcher_pid, {path, _events}},
         %{watcher_pid: watcher_pid} = state
       ) do
-    FastGlobal.put(:stylesheet_paths, [])
+    case Path.extname(path) do
+      ".coffee" -> FastGlobal.put(:javascript_paths, [])
+      ".sass" -> FastGlobal.put(:stylesheet_paths, [])
+    end
+
     {:noreply, state}
   end
 end

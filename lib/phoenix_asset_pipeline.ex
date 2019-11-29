@@ -13,12 +13,23 @@ defmodule PhoenixAssetPipeline do
   alias PhoenixAssetPipeline.Javascript
   alias PhoenixAssetPipeline.Stylesheet
 
+  @subdomain "assets."
+
   def style_tag(path) do
     content_tag(:style, path |> Stylesheet.new() |> raw)
   end
 
-  def script_tag(_conn, path) do
-    %{async: async, src: src, integrity: integrity} = Javascript.new(path)
-    content_tag(:script, "", async: async, src: src, integrity: integrity)
+  def script_tag(%Plug.Conn{req_headers: req_headers, scheme: scheme} = _conn, path) do
+    %{digest: digest, integrity: integrity} = Javascript.new(path)
+
+    headers = Enum.into(req_headers, %{})
+
+    content_tag(:script, "",
+      async: true,
+      src: "#{scheme}://#{@subdomain}#{headers["host"]}/#{path}-#{digest}.js",
+      integrity: integrity
+    )
   end
+
+  def subdomain, do: @subdomain
 end
