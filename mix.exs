@@ -45,7 +45,9 @@ defmodule PhoenixAssetPipeline.MixProject do
       {:coffee_compiler, "~> 0.1.0"},
       {:dialyxir, "~> 1.0.0-rc.7", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
+      {:fastglobal, "~> 1.0"},
       {:phoenix_html, "~> 2.13"},
+      {:plug, "~> 1.8"},
       {:sass_compiler, "~> 0.1.0"}
     ]
   end
