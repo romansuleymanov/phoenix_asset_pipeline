@@ -11,7 +11,8 @@ defmodule PhoenixAssetPipeline.Plug do
         } = conn,
         _
       ) do
-    js = FastGlobal.get(request_path)
+    %{"path" => path} = ~r/\/(?<path>.+)-.+\.js/ |> Regex.named_captures(request_path)
+    js = FastGlobal.get("js_#{path}")
 
     conn
     |> send_resp(200, js[:content])

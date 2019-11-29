@@ -18,12 +18,11 @@ defmodule PhoenixAssetPipeline.Javascript do
   defp generate_js(path, js_paths) do
     with {:ok, coffee} <- File.read("#{@javascripts_path}/#{path}.coffee"),
          js <- Coffee.compile(coffee) do
-      digest = Base.encode16(:erlang.md5(js), case: :lower)
+      digest = js |> :erlang.md5() |> Base.encode16(case: :lower)
       integrity = :crypto.hash(:sha384, js) |> Base.encode64()
-      full_path = "/#{path}-#{digest}.js"
 
-      FastGlobal.put(full_path, %{content: js, digest: digest, integrity: integrity})
-      FastGlobal.put(:js_paths, [full_path | js_paths])
+      FastGlobal.put("js_#{path}", %{content: js, digest: digest, integrity: integrity})
+      FastGlobal.put(:js_paths, [path | js_paths])
       %{content: js, digest: digest, integrity: integrity}
     else
       {:error, msg} -> raise msg
