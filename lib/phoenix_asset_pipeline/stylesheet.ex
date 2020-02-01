@@ -4,7 +4,7 @@ defmodule PhoenixAssetPipeline.Stylesheet do
   def new(path) do
     css_paths = FastGlobal.get(:css_paths) || []
 
-    case Enum.member?(css_paths, path) do
+    case path in css_paths do
       true -> FastGlobal.get("css_#{path}")
       false -> generate_css(path, css_paths)
     end

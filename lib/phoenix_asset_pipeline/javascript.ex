@@ -7,7 +7,7 @@ defmodule PhoenixAssetPipeline.Javascript do
     js_paths = FastGlobal.get(:js_paths) || []
 
     %{content: _, digest: digest, integrity: integrity} =
-      case Enum.member?(js_paths, path) do
+      case path in js_paths do
         true -> FastGlobal.get("js_#{path}")
         false -> generate_js(path, js_paths)
       end
