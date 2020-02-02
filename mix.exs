@@ -3,6 +3,7 @@ defmodule PhoenixAssetPipeline.MixProject do
 
   alias PhoenixAssetPipeline.Application
 
+  @env Mix.env()
   @version "0.1.0"
 
   @description """
@@ -26,12 +27,14 @@ defmodule PhoenixAssetPipeline.MixProject do
   end
 
   # Run "mix help compile.app" to learn about applications.
-  def application do
+  def application when @env == :dev do
     [
       mod: {Application, []},
       extra_applications: [:logger]
     ]
   end
+
+  def application, do: []
 
   defp package do
     [

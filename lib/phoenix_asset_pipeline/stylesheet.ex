@@ -23,6 +23,7 @@ defmodule PhoenixAssetPipeline.Stylesheet do
          {:ok, css} <- compile_sass(sass) do
       FastGlobal.put("css_#{path}", css)
       FastGlobal.put(:css_paths, [path | css_paths])
+
       css
     else
       {:error, msg} -> raise msg
