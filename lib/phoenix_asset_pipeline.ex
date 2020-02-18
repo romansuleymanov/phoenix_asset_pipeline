@@ -17,7 +17,7 @@ defmodule PhoenixAssetPipeline do
 
   def style_tag(path), do: content_tag(:style, Stylesheet.new(path))
 
-  def script_tag(%{req_headers: req_headers, scheme: scheme} = _conn, path) do
+  def script_tag(%{req_headers: req_headers, scheme: scheme}, path) do
     %{digest: digest, integrity: integrity} = Javascript.new(path)
 
     headers = Enum.into(req_headers, %{})
