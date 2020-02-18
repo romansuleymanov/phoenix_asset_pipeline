@@ -3,7 +3,6 @@ defmodule PhoenixAssetPipeline.MixProject do
 
   alias PhoenixAssetPipeline.Application
 
-  @env Mix.env()
   @version "0.1.0"
 
   @description """
@@ -27,14 +26,12 @@ defmodule PhoenixAssetPipeline.MixProject do
   end
 
   # Run "mix help compile.app" to learn about applications.
-  def application when @env == :dev do
+  def application do
     [
       mod: {Application, []},
       extra_applications: [:logger]
     ]
   end
-
-  def application, do: []
 
   defp package do
     [
@@ -48,14 +45,14 @@ defmodule PhoenixAssetPipeline.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:coffee_compiler, "~> 0.1.0"},
+      {:credo, "~> 1.2", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.7", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
       {:fastglobal, "~> 1.0"},
-      {:file_system, "~> 0.2.7"},
-      {:phoenix_html, "~> 2.13"},
-      {:plug, "~> 1.8"},
-      {:sass_compiler, "~> 0.1.0"}
+      {:file_system, "~> 0.2"},
+      {:phoenix_html, "~> 2.14"},
+      {:plug, "~> 1.9"},
+      {:sass_compiler, "~> 0.1"}
     ]
   end
 end

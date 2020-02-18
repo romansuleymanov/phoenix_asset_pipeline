@@ -8,18 +8,16 @@ defmodule PhoenixAssetPipeline do
   or under for example `App.LayoutView` to have it available in your layout.
   """
 
-  use Phoenix.HTML
+  import Phoenix.HTML.Tag, only: [content_tag: 2, content_tag: 3]
 
   alias PhoenixAssetPipeline.Javascript
   alias PhoenixAssetPipeline.Stylesheet
 
   @subdomain "assets."
 
-  def style_tag(path) do
-    content_tag(:style, path |> Stylesheet.new() |> raw)
-  end
+  def style_tag(path), do: content_tag(:style, Stylesheet.new(path))
 
-  def script_tag(%Plug.Conn{req_headers: req_headers, scheme: scheme} = _conn, path) do
+  def script_tag(%{req_headers: req_headers, scheme: scheme} = _conn, path) do
     %{digest: digest, integrity: integrity} = Javascript.new(path)
 
     headers = Enum.into(req_headers, %{})

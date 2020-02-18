@@ -1,4 +1,6 @@
 defmodule PhoenixAssetPipeline.Application do
+  @moduledoc false
+
   use Application
 
   alias PhoenixAssetPipeline.Watcher

@@ -1,4 +1,6 @@
 defmodule PhoenixAssetPipeline.Javascript do
+  @moduledoc false
+
   @javascripts_path "assets/javascripts"
 
   def javascripts_path, do: @javascripts_path

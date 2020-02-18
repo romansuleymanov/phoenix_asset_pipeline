@@ -1,55 +1,37 @@
 defmodule PhoenixAssetPipeline.Watcher do
+  @moduledoc false
+
   use GenServer
 
   alias PhoenixAssetPipeline.Stylesheet
-
-  @root Path.expand("./") <> "/"
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
 
-  def init(_args) do
-    {:ok, watcher_pid} = FileSystem.start_link(dirs: [Stylesheet.stylesheets_path()])
-    FileSystem.subscribe(watcher_pid)
-
-    {:ok, %{watcher_pid: watcher_pid}}
+  def init(_) do
+    {:ok, pid} = FileSystem.start_link(dirs: ["assets"])
+    FileSystem.subscribe(pid)
+    {:ok, %{watcher_pid: pid}}
   end
 
-  def handle_info(
-        {:file_event, watcher_pid, {path, _events}},
-        %{watcher_pid: watcher_pid} = state
-      ) do
+  def handle_info({:file_event, _, {path, _}}, %{watcher_pid: _} = state) do
     extname = Path.extname(path)
+    %{base_path: base_path, paths: paths} = metadata(extname)
 
-    file =
-      path
-      |> relative_path()
-      |> file_without_extname(extname)
+    %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+).*#{extname}/, path)
 
-    key =
-      case extname do
-        ".coffee" -> :js_paths
-        ".sass" -> :css_paths
-      end
-
-    paths = FastGlobal.get(key) || []
-    unless file in paths, do: FastGlobal.put(key, [])
+    if path in paths do
+      Stylesheet.delete_path(path)
+      Stylesheet.put_paths(List.delete(paths, path))
+    else
+      for path <- paths, do: Stylesheet.delete_path(path)
+      Stylesheet.delete_paths()
+    end
 
     {:noreply, state}
   end
 
-  defp file_without_extname(file, extname) do
-    extname_length = String.length(extname)
-    file_length = String.length(file)
-
-    String.slice(file, 0, file_length - extname_length)
-  end
-
-  defp relative_path(path) do
-    root_length = String.length(@root)
-    path_length = String.length(path)
-
-    String.slice(path, root_length, path_length - root_length)
-  end
+  defp metadata(".sass"), do: %{base_path: Stylesheet.base_path(), paths: Stylesheet.get_paths()}
+  defp metadata(_), do: %{base_path: "", paths: []}
 end
