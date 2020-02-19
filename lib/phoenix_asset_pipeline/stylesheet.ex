@@ -1,32 +1,64 @@
 defmodule PhoenixAssetPipeline.Stylesheet do
-  @stylesheets_path "assets/stylesheets"
+  @moduledoc false
+
+  import FastGlobal, only: [delete: 1, get: 1, put: 2]
+  import Phoenix.HTML, only: [raw: 1]
+
+  @base_path "assets/stylesheets"
 
   def new(path) do
-    css_paths = FastGlobal.get(:css_paths) || []
-
-    case path in css_paths do
-      true -> FastGlobal.get("css_#{path}")
-      false -> generate_css(path, css_paths)
-    end
+    path
+    |> content
+    |> raw
   end
 
-  def stylesheets_path, do: @stylesheets_path
+  def base_path, do: @base_path
 
-  defp compile_sass(sass) when sass == "", do: {:ok, sass}
-
-  defp compile_sass(sass) do
-    Sass.compile(sass, %{include_paths: [@stylesheets_path], is_indented_syntax: true})
+  def delete_path(path) do
+    path
+    |> asset_key
+    |> delete_key
   end
 
-  defp generate_css(path, css_paths) do
-    with {:ok, sass} <- File.read("#{@stylesheets_path}/#{path}.sass"),
+  def delete_paths, do: delete_key(:css_paths)
+
+  def get_path(path) do
+    path
+    |> asset_key
+    |> get_key
+  end
+
+  def get_paths, do: get_key(:css_paths) || []
+
+  def put_paths(paths), do: put(:css_paths, paths)
+
+  defp asset_key(path), do: :"css_#{path}"
+
+  defp content(path), do: get_path(path) || generate_css(path)
+
+  defp generate_css(path) do
+    with {:ok, sass} <- File.read("#{@base_path}/#{path}.sass"),
          {:ok, css} <- compile_sass(sass) do
-      FastGlobal.put("css_#{path}", css)
-      FastGlobal.put(:css_paths, [path | css_paths])
+      put_css(path, css)
+
+      case get_paths() do
+        [] -> put_paths([path])
+        paths -> unless path in paths, do: put_paths([path | paths])
+      end
 
       css
     else
       {:error, msg} -> raise msg
     end
   end
+
+  defp compile_sass(""), do: {:ok, ""}
+
+  defp compile_sass(sass) do
+    Sass.compile(sass, %{include_paths: [@base_path], is_indented_syntax: true})
+  end
+
+  defp delete_key(key), do: delete(key)
+  defp get_key(key), do: get(key)
+  defp put_css(path, css), do: put(asset_key(path), css)
 end
