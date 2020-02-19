@@ -7,12 +7,18 @@ defmodule PhoenixAssetPipeline.Stylesheet do
   @base_path "assets/stylesheets"
 
   def new(path) do
-    raw(get_path(path) || generate_css(path))
+    path
+    |> content
+    |> raw
   end
 
   def base_path, do: @base_path
 
-  def delete_path(path), do: delete_key(asset_key(path))
+  def delete_path(path) do
+    path
+    |> asset_key
+    |> delete_key
+  end
 
   def delete_paths, do: delete_key(:css_paths)
 
@@ -27,6 +33,8 @@ defmodule PhoenixAssetPipeline.Stylesheet do
   def put_paths(paths), do: put(:css_paths, paths)
 
   defp asset_key(path), do: :"css_#{path}"
+
+  defp content(path), do: get_path(path) || generate_css(path)
 
   defp generate_css(path) do
     with {:ok, sass} <- File.read("#{@base_path}/#{path}.sass"),
