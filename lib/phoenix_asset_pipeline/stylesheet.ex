@@ -37,7 +37,9 @@ defmodule PhoenixAssetPipeline.Stylesheet do
   defp content(path), do: get_path(path) || generate_css(path)
 
   defp generate_css(path) do
-    with {:ok, sass} <- File.read("#{@base_path}/#{path}.sass"),
+    file_path = "#{@base_path}/#{path}.sass"
+
+    with {:ok, sass} <- File.read(file_path),
          {:ok, css} <- compile_sass(sass) do
       put_css(path, css)
 
@@ -48,7 +50,14 @@ defmodule PhoenixAssetPipeline.Stylesheet do
 
       css
     else
-      {:error, msg} -> raise msg
+      {:error, :enoent} ->
+        raise File.Error,
+          reason: :enoent,
+          action: "read file",
+          path: IO.chardata_to_string(file_path)
+
+      _ ->
+        ""
     end
   end
 
