@@ -18,7 +18,7 @@ defmodule PhoenixAssetPipeline.Watcher do
   def handle_info({:file_event, _, {path, _}}, %{watcher_pid: _} = state) do
     extname = Path.extname(path)
     %{base_path: base_path, paths: paths} = metadata(extname)
-    %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+).*#{extname}/, path)
+    %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+)#{extname}/, path)
 
     if path in paths do
       Stylesheet.delete_path(path)
