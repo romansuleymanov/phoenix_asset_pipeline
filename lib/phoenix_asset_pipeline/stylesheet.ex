@@ -64,7 +64,7 @@ defmodule PhoenixAssetPipeline.Stylesheet do
   defp compile_sass(""), do: {:ok, ""}
 
   defp compile_sass(sass) do
-    Sass.compile(sass, %{include_paths: [@base_path], is_indented_syntax: true})
+    Sass.compile(sass, %{include_paths: [@base_path], is_indented_syntax: true, output_style: 3})
   end
 
   defp delete_key(key), do: delete(key)

@@ -10,21 +10,18 @@ defmodule PhoenixAssetPipeline do
 
   import Phoenix.HTML.Tag, only: [content_tag: 2, content_tag: 3]
 
-  alias PhoenixAssetPipeline.Javascript
-  alias PhoenixAssetPipeline.Stylesheet
+  alias PhoenixAssetPipeline.{Javascript, Stylesheet}
 
   @subdomain "assets."
 
   def style_tag(path), do: content_tag(:style, Stylesheet.new(path))
 
-  def script_tag(%{req_headers: req_headers, scheme: scheme}, path) do
+  def script_tag(path) do
     %{digest: digest, integrity: integrity} = Javascript.new(path)
-
-    headers = Enum.into(req_headers, %{})
 
     content_tag(:script, "",
       async: true,
-      src: "#{scheme}://#{@subdomain}#{headers["host"]}/#{path}-#{digest}.js",
+      src: "http://localhost:4001/js/#{path}-#{digest}.js",
       integrity: integrity
     )
   end

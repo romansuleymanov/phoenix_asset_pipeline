@@ -3,9 +3,15 @@ defmodule PhoenixAssetPipeline.Application do
 
   use Application
 
-  alias PhoenixAssetPipeline.Watcher
+  import Plug.Cowboy
+  alias PhoenixAssetPipeline.{Plug, Watcher}
 
   def start(_type, _args) do
-    Supervisor.start_link([Watcher], strategy: :one_for_one)
+    children = [
+      child_spec(scheme: :http, plug: Plug, port: 4001),
+      Watcher
+    ]
+
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
 end

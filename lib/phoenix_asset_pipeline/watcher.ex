@@ -3,7 +3,7 @@ defmodule PhoenixAssetPipeline.Watcher do
 
   use GenServer
 
-  alias PhoenixAssetPipeline.Stylesheet
+  import PhoenixAssetPipeline.Stylesheet, except: [get_path: 1, new: 1]
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -21,16 +21,16 @@ defmodule PhoenixAssetPipeline.Watcher do
     %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+)#{extname}/, path)
 
     if path in paths do
-      Stylesheet.delete_path(path)
-      Stylesheet.put_paths(List.delete(paths, path))
+      delete_path(path)
+      put_paths(List.delete(paths, path))
     else
-      for path <- paths, do: Stylesheet.delete_path(path)
-      Stylesheet.delete_paths()
+      for path <- paths, do: delete_path(path)
+      delete_paths()
     end
 
     {:noreply, state}
   end
 
-  defp metadata(".sass"), do: %{base_path: Stylesheet.base_path(), paths: Stylesheet.get_paths()}
+  defp metadata(".sass"), do: %{base_path: base_path(), paths: get_paths()}
   defp metadata(_), do: %{base_path: "", paths: []}
 end

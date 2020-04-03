@@ -19,7 +19,7 @@ defmodule PhoenixAssetPipeline.Javascript do
 
   defp generate_js(path, js_paths) do
     with {:ok, coffee} <- File.read("#{@javascripts_path}/#{path}.coffee"),
-         js <- Coffee.compile(coffee) do
+         js <- coffee do
       digest =
         js
         |> :erlang.md5()
