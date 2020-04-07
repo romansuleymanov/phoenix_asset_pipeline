@@ -25,12 +25,12 @@ defmodule PhoenixAssetPipeline.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: application_mod(Mix.env()),
+      mod: application_mod(Application.get_env(:phoenix_asset_pipeline, :serve_assets)),
       extra_applications: [:logger]
     ]
   end
 
-  def application_mod(:dev) do
+  def application_mod(true) do
     if iex_running?(), do: application_mod(), else: {PhoenixAssetPipeline.Application, []}
   end
 

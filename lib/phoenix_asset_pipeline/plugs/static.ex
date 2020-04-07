@@ -5,7 +5,7 @@ defmodule PhoenixAssetPipeline.Plugs.Static do
     [
       at: Keyword.get(opts, :at, "/"),
       brotli?: true,
-      from: Application.fetch_env!(:phoenix_asset_pipeline, :from),
+      from: from,
       gzip?: true
     ]
   end
@@ -13,5 +13,9 @@ defmodule PhoenixAssetPipeline.Plugs.Static do
   def call(conn, opts) do
     conn
     |> Plug.Static.call(Plug.Static.init(opts))
+  end
+
+  defp from do
+    Application.fetch_env!(:phoenix_asset_pipeline, :from)
   end
 end
