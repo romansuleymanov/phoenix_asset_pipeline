@@ -1,5 +1,6 @@
 defmodule PhoenixAssetPipeline.Plugs.Static do
   @moduledoc false
+  alias Plug.Static
 
   def init(opts) do
     [
@@ -11,8 +12,7 @@ defmodule PhoenixAssetPipeline.Plugs.Static do
   end
 
   def call(conn, opts) do
-    conn
-    |> Plug.Static.call(Plug.Static.init(opts))
+    Static.call(conn, Static.init(opts))
   end
 
   defp from do

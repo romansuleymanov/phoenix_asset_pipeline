@@ -1,14 +1,9 @@
 defmodule PhoenixAssetPipeline.Plug do
   @moduledoc false
+  use Plug.Builder
 
-  alias PhoenixAssetPipeline.Plugs.CoffeeScript
-  alias PhoenixAssetPipeline.Plugs.Static
+  alias PhoenixAssetPipeline.Plugs.{CoffeeScript, Static}
 
-  def init(opts), do: opts
-
-  def call(conn, opts) do
-    conn
-    # |> CoffeeScript.call(CoffeeScript.init(opts))
-    |> Static.call(Static.init(at: "/img"))
-  end
+  # plug CoffeeScript
+  plug Static, at: "/img"
 end

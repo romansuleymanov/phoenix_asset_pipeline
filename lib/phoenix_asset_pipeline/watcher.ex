@@ -33,7 +33,7 @@ defmodule PhoenixAssetPipeline.Watcher do
 
   defp delete_path(".sass", path) do
     path
-    |> Stylesheet.asset_key
+    |> Stylesheet.asset_key()
     |> delete()
   end
 

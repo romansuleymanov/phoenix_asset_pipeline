@@ -1,11 +1,14 @@
 defmodule PhoenixAssetPipeline.Stylesheet do
   @moduledoc false
-
   import Phoenix.HTML, only: [raw: 1]
   alias PhoenixAssetPipeline.Storage
 
   @base_path "assets/stylesheets"
   @paths_key :css_paths
+
+  def asset_key(path), do: :"css_#{path}"
+
+  def base_path, do: @base_path
 
   def new(path) do
     path
@@ -13,10 +16,7 @@ defmodule PhoenixAssetPipeline.Stylesheet do
     |> raw
   end
 
-  def asset_key(path), do: :"css_#{path}"
-  def base_path, do: @base_path
   def paths_key, do: @paths_key
-
 
   defp compile_sass(""), do: {:ok, ""}
 

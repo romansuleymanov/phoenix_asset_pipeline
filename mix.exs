@@ -30,12 +30,11 @@ defmodule PhoenixAssetPipeline.MixProject do
     ]
   end
 
-  def application_mod(true) do
-    if iex_running?(), do: application_mod(), else: {PhoenixAssetPipeline.Application, []}
+  defp application_mod(true) do
+    if iex_running?(), do: [], else: {PhoenixAssetPipeline.Application, []}
   end
 
-  def application_mod(_), do: application_mod()
-  def application_mod, do: []
+  defp application_mod(_), do: []
 
   defp iex_running? do
     Code.ensure_loaded?(IEx) and IEx.started?()
