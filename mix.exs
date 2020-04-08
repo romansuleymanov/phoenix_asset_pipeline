@@ -25,7 +25,7 @@ defmodule PhoenixAssetPipeline.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: application_mod(Application.get_env(:phoenix_asset_pipeline, :serve_assets)),
+      mod: application_mod(Application.get_env(:phoenix_asset_pipeline, :server)),
       extra_applications: [:logger]
     ]
   end

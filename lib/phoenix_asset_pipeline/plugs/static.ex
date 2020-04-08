@@ -6,7 +6,7 @@ defmodule PhoenixAssetPipeline.Plugs.Static do
     [
       at: Keyword.get(opts, :at, "/"),
       brotli?: true,
-      from: from,
+      from: from(),
       gzip?: true
     ]
   end

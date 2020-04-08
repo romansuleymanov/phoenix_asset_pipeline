@@ -5,5 +5,5 @@ defmodule PhoenixAssetPipeline.Plug do
   alias PhoenixAssetPipeline.Plugs.{CoffeeScript, Static}
 
   # plug CoffeeScript
-  plug Static, at: "/img"
+  plug(Static, at: "/img")
 end

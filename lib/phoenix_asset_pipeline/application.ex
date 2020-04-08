@@ -3,28 +3,29 @@ defmodule PhoenixAssetPipeline.Application do
 
   use Application
 
-  import Plug.Cowboy
+  import Plug.Cowboy, only: [child_spec: 1]
   alias PhoenixAssetPipeline.{Plug, Watcher}
+
+  @port 4001
+  @scheme :http
 
   require Logger
 
   def start(_type, _args) do
-    scheme = :http
-    server = child_spec(scheme: scheme, plug: Plug, port: 4001)
-    ref = elem(server.id, 1)
-
     children = [
-      server,
-      Watcher
+      Watcher,
+      cowboy_spec = child_spec(scheme: @scheme, plug: Plug, port: @port)
     ]
+
+    {_, ref} = cowboy_spec.id
 
     case Supervisor.start_link(children, strategy: :one_for_one) do
       {:ok, pid} ->
-        Logger.info(fn -> info(scheme, ref) end)
+        Logger.info(fn -> info(ref) end)
         {:ok, pid}
 
       {:error, {:shutdown, {_, _, {{_, {:error, :eaddrinuse}}, _}}}} = error ->
-        Logger.error([info(scheme, ref), " failed, port already in use"])
+        Logger.error([info(ref), " failed, port already in use"])
         error
 
       {:error, _} = error ->
@@ -32,12 +33,8 @@ defmodule PhoenixAssetPipeline.Application do
     end
   end
 
-  defp info(scheme, ref) do
-    "Start asset pipeline server at #{bound_address(scheme, ref)}"
-  end
-
-  defp bound_address(scheme, ref) do
+  defp info(ref) do
     {addr, port} = :ranch.get_addr(ref)
-    "#{:inet.ntoa(addr)}:#{port} (#{scheme})"
+    "Start asset pipeline server at #{:inet.ntoa(addr)}:#{port} (#{@scheme})"
   end
 end
