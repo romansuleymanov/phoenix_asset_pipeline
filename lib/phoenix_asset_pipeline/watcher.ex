@@ -18,56 +18,31 @@ defmodule PhoenixAssetPipeline.Watcher do
 
   def handle_info({:file_event, _, {path, _}}, %{watcher_pid: _} = state) do
     extname = Path.extname(path)
-    %{base_path: base_path, paths: paths} = metadata(extname)
-    %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+)#{extname}/, path)
+    %{base_path: base_path, key_list: storage_keys} = metadata(extname)
 
-    if path in paths do
-      update_paths(extname, path, paths)
+    %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+)#{extname}/, path)
+    key = asset_key(extname, path)
+
+    if key in storage_keys do
+      delete(key)
     else
-      for path <- paths, do: delete_path(extname, path)
-      delete_paths(extname)
+      for key <- storage_keys, do: delete(key)
     end
 
     {:noreply, state}
   end
 
-  defp delete_path(".sass", path) do
-    path
-    |> Stylesheet.asset_key()
-    |> delete()
-  end
-
-  # defp delete_path(".coffee", path) do
-  #   path
-  #   |> CoffeeScript.asset_key
-  #   |> delete()
-  # end
-
-  defp delete_paths(".sass") do
-    Stylesheet.paths_key() |> delete()
-  end
-
-  # defp delete_paths(".coffee") do
-  #   CoffeeScript.paths_key() |> delete()
-  # end
+  defp asset_key(".sass", path), do: Stylesheet.asset_key(path)
+  # defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
+  defp asset_key(_, path), do: path
 
   defp metadata(".sass") do
-    %{base_path: Stylesheet.base_path(), paths: get(Stylesheet.paths_key(), [])}
+    %{base_path: Stylesheet.base_path(), key_list: Stylesheet.key_list()}
   end
 
-  defp metadata(".coffee") do
-    %{base_path: "", paths: []}
-  end
-
-  defp metadata(_), do: %{base_path: "", paths: []}
-
-  defp update_paths(".sass" = extname, path, paths) do
-    delete_path(extname, path)
-    Stylesheet.paths_key() |> put(List.delete(paths, path))
-  end
-
-  # defp update_paths(".coffee" = extname, path, paths) do
-  #   delete_path(extname, path)
-  #   CoffeeScript.paths_key() |> put(List.delete(paths, path))
+  # defp metadata(".coffee") do
+  #   %{base_path: CoffeeScript.base_path(), key_list: CoffeeScript.key_list()}
   # end
+
+  defp metadata(_), do: %{base_path: "", key_list: []}
 end

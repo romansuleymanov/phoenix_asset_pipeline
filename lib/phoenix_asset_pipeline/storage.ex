@@ -1,8 +1,11 @@
 defmodule PhoenixAssetPipeline.Storage do
-  @moduledoc false
+  @moduledoc """
+  This module implements the `PhoenixAssetPipeline.Storage` and stores the data with
+  [:persistent_term](https://erlang.org/doc/man/persistent_term.html).
+  """
 
-  def delete(key), do: FastGlobal.delete(key)
-  def get(key), do: FastGlobal.get(key)
-  def get(key, default_value), do: get(key) || default_value
-  def put(key, value), do: FastGlobal.put(key, value)
+  defdelegate delete(key), as: :erase, to: :persistent_term
+  defdelegate get(key, default \\ nil), to: :persistent_term
+  defdelegate list, as: :get, to: :persistent_term
+  defdelegate put(key, value), to: :persistent_term
 end

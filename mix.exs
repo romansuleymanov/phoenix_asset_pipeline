@@ -25,19 +25,12 @@ defmodule PhoenixAssetPipeline.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: application_mod(Application.get_env(:phoenix_asset_pipeline, :server)),
-      extra_applications: [:logger]
+      mod: {PhoenixAssetPipeline, []},
+      extra_applications: [:logger],
+      env: [
+        server: Mix.env() == :dev
+      ]
     ]
-  end
-
-  defp application_mod(true) do
-    if iex_running?(), do: [], else: {PhoenixAssetPipeline.Application, []}
-  end
-
-  defp application_mod(_), do: []
-
-  defp iex_running? do
-    Code.ensure_loaded?(IEx) and IEx.started?()
   end
 
   defp package do
@@ -56,10 +49,9 @@ defmodule PhoenixAssetPipeline.MixProject do
       {:credo, "~> 1.4.0-rc.1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
-      {:fastglobal, "~> 1.0"},
       {:file_system, "~> 0.2"},
+      {:phoenix, "~> 1.4"},
       {:phoenix_html, "~> 2.14"},
-      {:plug_cowboy, "~> 2.1"},
       {:sass_compiler, "~> 0.1"}
     ]
   end

@@ -1,16 +1,18 @@
 defmodule PhoenixAssetPipeline.Javascript do
   @moduledoc false
 
+  import PhoenixAssetPipeline.Storage
+
   @javascripts_path "assets/javascripts"
 
   def javascripts_path, do: @javascripts_path
 
   def new(path) do
-    js_paths = FastGlobal.get(:js_paths) || []
+    js_paths = get(:js_paths) || []
 
     %{content: _, digest: digest, integrity: integrity} =
       case path in js_paths do
-        true -> FastGlobal.get("js_#{path}")
+        true -> get("js_#{path}")
         false -> generate_js(path, js_paths)
       end
 
@@ -30,8 +32,8 @@ defmodule PhoenixAssetPipeline.Javascript do
         |> :crypto.hash(js)
         |> Base.encode64()
 
-      FastGlobal.put("js_#{path}", %{content: js, digest: digest, integrity: integrity})
-      FastGlobal.put(:js_paths, [path | js_paths])
+      put("js_#{path}", %{content: js, digest: digest, integrity: integrity})
+      put(:js_paths, [path | js_paths])
 
       %{content: js, digest: digest, integrity: integrity}
     else

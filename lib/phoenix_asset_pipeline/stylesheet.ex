@@ -4,19 +4,19 @@ defmodule PhoenixAssetPipeline.Stylesheet do
   alias PhoenixAssetPipeline.Storage
 
   @base_path "assets/stylesheets"
-  @paths_key :css_paths
 
   def asset_key(path), do: :"css_#{path}"
-
   def base_path, do: @base_path
+
+  def key_list do
+    :maps.filter(fn path -> String.starts_with?(path, "css_") end, Storage.list())
+  end
 
   def new(path) do
     path
     |> content
     |> raw
   end
-
-  def paths_key, do: @paths_key
 
   defp compile_sass(""), do: {:ok, ""}
 
@@ -35,11 +35,6 @@ defmodule PhoenixAssetPipeline.Stylesheet do
     with {:ok, sass} <- File.read(file_path),
          {:ok, css} <- compile_sass(sass) do
       Storage.put(asset_key(path), css)
-
-      case Storage.get(@paths_key, []) do
-        [] -> Storage.put(@paths_key, [path])
-        paths -> unless path in paths, do: Storage.put(@paths_key, [path | paths])
-      end
 
       css
     else
