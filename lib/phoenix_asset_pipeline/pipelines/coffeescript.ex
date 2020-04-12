@@ -1,4 +1,4 @@
-defmodule PhoenixAssetPipeline.Javascript do
+defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   @moduledoc false
 
   import PhoenixAssetPipeline.Storage

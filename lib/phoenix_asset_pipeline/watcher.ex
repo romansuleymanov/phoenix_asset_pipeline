@@ -4,7 +4,7 @@ defmodule PhoenixAssetPipeline.Watcher do
   use GenServer
 
   import PhoenixAssetPipeline.Storage
-  alias PhoenixAssetPipeline.Stylesheet
+  alias PhoenixAssetPipeline.Pipelines.{CoffeeScript, Sass}
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -32,12 +32,12 @@ defmodule PhoenixAssetPipeline.Watcher do
     {:noreply, state}
   end
 
-  defp asset_key(".sass", path), do: Stylesheet.asset_key(path)
+  defp asset_key(".sass", path), do: Sass.asset_key(path)
   # defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
   defp asset_key(_, path), do: path
 
   defp metadata(".sass") do
-    %{base_path: Stylesheet.base_path(), key_list: Stylesheet.key_list()}
+    %{base_path: Sass.base_path(), key_list: Sass.key_list()}
   end
 
   # defp metadata(".coffee") do

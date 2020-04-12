@@ -1,6 +1,5 @@
-defmodule PhoenixAssetPipeline.Stylesheet do
+defmodule PhoenixAssetPipeline.Pipelines.Sass do
   @moduledoc false
-  import Phoenix.HTML, only: [raw: 1]
   alias PhoenixAssetPipeline.Storage
 
   @base_path "assets/stylesheets"
@@ -12,11 +11,7 @@ defmodule PhoenixAssetPipeline.Stylesheet do
     :maps.filter(fn path -> String.starts_with?(path, "css_") end, Storage.list())
   end
 
-  def new(path) do
-    path
-    |> content
-    |> raw
-  end
+  def new(path), do: content(path)
 
   defp compile_sass(""), do: {:ok, ""}
 

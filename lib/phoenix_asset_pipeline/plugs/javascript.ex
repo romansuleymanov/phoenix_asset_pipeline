@@ -1,4 +1,4 @@
-defmodule PhoenixAssetPipeline.Plugs.CoffeeScript do
+defmodule PhoenixAssetPipeline.Plugs.JavaScript do
   #   @behaviour Plug
   #   @allowed_methods ~w(GET HEAD)
 

@@ -26,10 +26,7 @@ defmodule PhoenixAssetPipeline.MixProject do
   def application do
     [
       mod: {PhoenixAssetPipeline, []},
-      extra_applications: [:logger],
-      env: [
-        server: Mix.env() == :dev
-      ]
+      extra_applications: [:logger]
     ]
   end
 

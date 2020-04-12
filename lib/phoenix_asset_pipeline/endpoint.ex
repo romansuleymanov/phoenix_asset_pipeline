@@ -1,7 +1,7 @@
 defmodule PhoenixAssetPipeline.Endpoint do
   @moduledoc false
 
-  alias PhoenixAssetPipeline.Plugs.{CoffeeScript, Static}
+  alias PhoenixAssetPipeline.Plugs.{JavaScript, Static}
 
   def init(opts) do
     [
@@ -18,7 +18,7 @@ defmodule PhoenixAssetPipeline.Endpoint do
       false -> conn
       _ -> Plug.SSL.call(conn, Plug.SSL.init(force_ssl))
     end
-    |> CoffeeScript.call([])
+    |> JavaScript.call([])
     |> Static.call(opts)
   end
 
