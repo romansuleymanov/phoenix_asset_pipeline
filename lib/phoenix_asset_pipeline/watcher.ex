@@ -14,13 +14,10 @@ defmodule PhoenixAssetPipeline.Watcher do
 
   def handle_info({:file_event, _, {path, _}}, %{watcher_pid: _} = state) do
     extname = Path.extname(path)
-    [base_path | key_list] = metadata(extname)
+    [base_path, prefix] = metadata(extname)
     %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+)#{extname}/, path)
 
-    extname
-    |> asset_key(path)
-    |> Storage.clean(key_list)
-
+    Storage.drop(path, prefix)
     {:noreply, state}
   end
 
@@ -28,11 +25,7 @@ defmodule PhoenixAssetPipeline.Watcher do
     GenServer.start_link(__MODULE__, args)
   end
 
-  defp asset_key(".sass", path), do: Sass.asset_key(path)
-  defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
-  defp asset_key(_, path), do: path
-
-  defp metadata(".sass"), do: [Sass.base_path(), Sass.key_list()]
-  defp metadata(".coffee"), do: [Sass.base_path(), CoffeeScript.key_list()]
-  defp metadata(_), do: ["", []]
+  defp metadata(".sass"), do: [Sass.base_path(), Sass.prefix()]
+  defp metadata(".coffee"), do: [CoffeeScript.base_path(), CoffeeScript.prefix()]
+  defp metadata(_), do: ["", ""]
 end

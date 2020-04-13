@@ -1,25 +1,26 @@
 defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   @moduledoc false
 
-  import PhoenixAssetPipeline.Storage
+  alias PhoenixAssetPipeline.Storage
 
   @base_path "assets/javascripts"
   @prefix "js_"
 
-  def asset_key(path), do: @prefix <> path
   def base_path, do: @base_path
 
   def new(path) do
-    js_paths = get(:js_paths) || []
+    js_paths = Storage.get(:js_paths) || []
 
     %{content: _, digest: digest, integrity: integrity} =
       case path in js_paths do
-        true -> get("js_#{path}")
+        true -> Storage.get("js_#{path}")
         false -> generate_js(path, js_paths)
       end
 
     %{digest: digest, integrity: "sha384-" <> integrity}
   end
+
+  def prefix, do: @prefix
 
   defp generate_js(path, js_paths) do
     with {:ok, coffee} <- File.read("#{@base_path}/#{path}.coffee"),
@@ -34,8 +35,8 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
         |> :crypto.hash(js)
         |> Base.encode64()
 
-      put("js_#{path}", %{content: js, digest: digest, integrity: integrity})
-      put(:js_paths, [path | js_paths])
+      Storage.put("js_#{path}", %{content: js, digest: digest, integrity: integrity})
+      Storage.put(:js_paths, [path | js_paths])
 
       %{content: js, digest: digest, integrity: integrity}
     else

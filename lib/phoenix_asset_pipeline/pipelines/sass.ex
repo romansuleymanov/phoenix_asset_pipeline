@@ -6,14 +6,11 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
   @base_path "assets/stylesheets"
   @prefix "css_"
 
-  def asset_key(path), do: @prefix <> path
   def base_path, do: @base_path
 
-  def key_list do
-    :maps.filter(fn path -> String.starts_with?(path, @prefix) end, Storage.list())
-  end
-
   def new(path), do: content(path)
+
+  def prefix, do: @prefix
 
   defp compile(""), do: {:ok, ""}
 
@@ -23,7 +20,9 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
   end
 
   defp content(path) do
-    Storage.get(asset_key(path)) || generate_css(path)
+    path
+    |> Storage.key(@prefix)
+    |> Storage.get() || generate_css(path)
   end
 
   defp generate_css(path) do
@@ -31,7 +30,9 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
 
     with {:ok, sass} <- File.read(file_path),
          {:ok, css} <- compile(sass) do
-      Storage.put(asset_key(path), css)
+      path
+      |> Storage.key(@prefix)
+      |> Storage.put(css)
 
       css
     else
