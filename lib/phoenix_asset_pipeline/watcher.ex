@@ -3,7 +3,7 @@ defmodule PhoenixAssetPipeline.Watcher do
 
   use GenServer
 
-  import PhoenixAssetPipeline.Storage
+  alias PhoenixAssetPipeline.Storage
   alias PhoenixAssetPipeline.Pipelines.{CoffeeScript, Sass}
 
   def start_link(args) do
@@ -30,10 +30,12 @@ defmodule PhoenixAssetPipeline.Watcher do
   defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
   defp asset_key(_, path), do: path
 
-  defp clean_storage(key, keys) when key in keys, do: delete(key)
-
-  defp clean_storage(key, keys) do
-    for key <- key_list, do: delete(key)
+  defp clean_storage(key, key_list) do
+    if key in key_list do
+      Storage.delete(key)
+    else
+      for key <- key_list, do: Storage.delete(key)
+    end
   end
 
   defp metadata(".sass"), do: [Sass.base_path(), Sass.key_list()]
