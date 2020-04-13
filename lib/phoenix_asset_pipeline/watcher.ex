@@ -6,10 +6,6 @@ defmodule PhoenixAssetPipeline.Watcher do
   alias PhoenixAssetPipeline.Storage
   alias PhoenixAssetPipeline.Pipelines.{CoffeeScript, Sass}
 
-  def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
-  end
-
   def init(_) do
     {:ok, pid} = FileSystem.start_link(dirs: ["assets"])
     FileSystem.subscribe(pid)
@@ -20,23 +16,21 @@ defmodule PhoenixAssetPipeline.Watcher do
     extname = Path.extname(path)
     [base_path | key_list] = metadata(extname)
     %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+)#{extname}/, path)
-    key = asset_key(extname, path)
 
-    clean_storage(key, key_list)
+    extname
+    |> asset_key(path)
+    |> Storage.clean(key_list)
+
     {:noreply, state}
+  end
+
+  def start_link(args) do
+    GenServer.start_link(__MODULE__, args)
   end
 
   defp asset_key(".sass", path), do: Sass.asset_key(path)
   defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
   defp asset_key(_, path), do: path
-
-  defp clean_storage(key, key_list) do
-    if key in key_list do
-      Storage.delete(key)
-    else
-      for key <- key_list, do: Storage.delete(key)
-    end
-  end
 
   defp metadata(".sass"), do: [Sass.base_path(), Sass.key_list()]
   defp metadata(".coffee"), do: [Sass.base_path(), CoffeeScript.key_list()]

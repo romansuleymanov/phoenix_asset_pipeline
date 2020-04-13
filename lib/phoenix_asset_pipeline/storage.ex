@@ -4,6 +4,10 @@ defmodule PhoenixAssetPipeline.Storage do
   [:persistent_term](https://erlang.org/doc/man/persistent_term.html).
   """
 
+  def clean(key, key_list) do
+    delete(key) || for key <- key_list, do: delete(key)
+  end
+
   defdelegate delete(key), as: :erase, to: :persistent_term
   defdelegate get(key, default \\ nil), to: :persistent_term
   defdelegate list, as: :get, to: :persistent_term
