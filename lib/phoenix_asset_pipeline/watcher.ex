@@ -33,16 +33,16 @@ defmodule PhoenixAssetPipeline.Watcher do
   end
 
   defp asset_key(".sass", path), do: Sass.asset_key(path)
-  # defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
+  defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
   defp asset_key(_, path), do: path
 
   defp metadata(".sass") do
     %{base_path: Sass.base_path(), key_list: Sass.key_list()}
   end
 
-  # defp metadata(".coffee") do
-  #   %{base_path: CoffeeScript.base_path(), key_list: CoffeeScript.key_list()}
-  # end
+  defp metadata(".coffee") do
+    %{base_path: CoffeeScript.base_path(), key_list: CoffeeScript.key_list()}
+  end
 
   defp metadata(_), do: %{base_path: "", key_list: []}
 end

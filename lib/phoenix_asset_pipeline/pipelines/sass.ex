@@ -1,21 +1,23 @@
 defmodule PhoenixAssetPipeline.Pipelines.Sass do
   @moduledoc false
+
   alias PhoenixAssetPipeline.Storage
 
   @base_path "assets/stylesheets"
+  @prefix "css_"
 
-  def asset_key(path), do: :"css_#{path}"
+  def asset_key(path), do: @prefix <> path
   def base_path, do: @base_path
 
   def key_list do
-    :maps.filter(fn path -> String.starts_with?(path, "css_") end, Storage.list())
+    :maps.filter(fn path -> String.starts_with?(path, @prefix) end, Storage.list())
   end
 
   def new(path), do: content(path)
 
-  defp compile_sass(""), do: {:ok, ""}
+  defp compile(""), do: {:ok, ""}
 
-  defp compile_sass(sass) do
+  defp compile(sass) do
     sass
     |> Sass.compile(%{include_paths: [@base_path], is_indented_syntax: true, output_style: 3})
   end
@@ -28,7 +30,7 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
     file_path = "#{@base_path}/#{path}.sass"
 
     with {:ok, sass} <- File.read(file_path),
-         {:ok, css} <- compile_sass(sass) do
+         {:ok, css} <- compile(sass) do
       Storage.put(asset_key(path), css)
 
       css

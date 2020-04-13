@@ -3,9 +3,11 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
 
   import PhoenixAssetPipeline.Storage
 
-  @javascripts_path "assets/javascripts"
+  @base_path "assets/javascripts"
+  @prefix "js_"
 
-  def javascripts_path, do: @javascripts_path
+  def asset_key(path), do: @prefix <> path
+  def base_path, do: @base_path
 
   def new(path) do
     js_paths = get(:js_paths) || []
@@ -20,7 +22,7 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   end
 
   defp generate_js(path, js_paths) do
-    with {:ok, coffee} <- File.read("#{@javascripts_path}/#{path}.coffee"),
+    with {:ok, coffee} <- File.read("#{@base_path}/#{path}.coffee"),
          js <- coffee do
       digest =
         js
