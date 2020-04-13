@@ -18,15 +18,15 @@ defmodule PhoenixAssetPipeline.Watcher do
 
   def handle_info({:file_event, _, {path, _}}, %{watcher_pid: _} = state) do
     extname = Path.extname(path)
-    %{base_path: base_path, key_list: storage_keys} = metadata(extname)
+    [base_path | key_list] = metadata(extname)
 
     %{"path" => path} = Regex.named_captures(~r/\/#{base_path}\/(?<path>.+)#{extname}/, path)
     key = asset_key(extname, path)
 
-    if key in storage_keys do
+    if key in key_list do
       delete(key)
     else
-      for key <- storage_keys, do: delete(key)
+      for key <- key_list, do: delete(key)
     end
 
     {:noreply, state}
@@ -36,13 +36,7 @@ defmodule PhoenixAssetPipeline.Watcher do
   defp asset_key(".coffee", path), do: CoffeeScript.asset_key(path)
   defp asset_key(_, path), do: path
 
-  defp metadata(".sass") do
-    %{base_path: Sass.base_path(), key_list: Sass.key_list()}
-  end
-
-  defp metadata(".coffee") do
-    %{base_path: CoffeeScript.base_path(), key_list: CoffeeScript.key_list()}
-  end
-
-  defp metadata(_), do: %{base_path: "", key_list: []}
+  defp metadata(".sass"), do: [Sass.base_path(), Sass.key_list()]
+  defp metadata(".coffee"), do: [Sass.base_path(), CoffeeScript.key_list()]
+  defp metadata(_), do: ["", []]
 end
