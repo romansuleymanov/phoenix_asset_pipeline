@@ -43,7 +43,7 @@ defmodule PhoenixAssetPipeline.MixProject do
   defp deps do
     [
       {:brotli, "~> 0.2"},
-      {:credo, "~> 1.4.0-rc.1", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.4.0-rc.2", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
       {:file_system, "~> 0.2"},
