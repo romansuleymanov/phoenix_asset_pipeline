@@ -1,6 +1,7 @@
 defmodule PhoenixAssetPipeline.Endpoint do
   @moduledoc false
 
+  import Plug.Conn
   alias PhoenixAssetPipeline.Plugs.{JavaScript, Static}
 
   def init(opts), do: opts
@@ -14,7 +15,9 @@ defmodule PhoenixAssetPipeline.Endpoint do
     end
     |> JavaScript.call([])
     |> Static.call(config())
-    |> Plug.Conn.send_resp(404, "Not found")
+
+    # |> put_resp_content_type("text/plain")
+    # |> send_resp(404, "not found")
   end
 
   def __handler__(conn, opts) do

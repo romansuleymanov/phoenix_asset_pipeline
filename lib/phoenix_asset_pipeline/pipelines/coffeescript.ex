@@ -17,7 +17,9 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   def prefix, do: @prefix
 
   defp content(path) do
-    with {:ok, coffee} <- File.read("#{@base_path}/#{path}.coffee"),
+    file_path = "#{@base_path}/#{path}.coffee"
+
+    with {:ok, coffee} <- File.read(file_path),
          {:ok, js} <- {:ok, coffee} do
       digest =
         js
@@ -35,7 +37,14 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
 
       {js, digest, integrity}
     else
-      {:error, msg} -> raise msg
+      {:error, :enoent} ->
+        raise File.Error,
+          reason: :enoent,
+          action: "read file",
+          path: IO.chardata_to_string(file_path)
+
+      _ ->
+        ""
     end
   end
 end
