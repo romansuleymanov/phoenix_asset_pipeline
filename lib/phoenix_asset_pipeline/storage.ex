@@ -14,7 +14,7 @@ defmodule PhoenixAssetPipeline.Storage do
   end
 
   defp key_list(prefix),
-    do: :maps.filter(fn path -> String.starts_with?(path, prefix) end, :persistent_term.get())
+    do: :maps.filter(&String.starts_with?(&1, prefix), :persistent_term.get())
 
   defdelegate get(key, default \\ nil), to: :persistent_term
   defdelegate put(key, value), to: :persistent_term

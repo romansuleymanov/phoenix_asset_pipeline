@@ -8,7 +8,11 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
 
   def base_path, do: @base_path
 
-  def new(path), do: content(path)
+  def new(path) do
+    path
+    |> Storage.key(@prefix)
+    |> Storage.get() || content(path)
+  end
 
   def prefix, do: @prefix
 
@@ -20,12 +24,6 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
   end
 
   defp content(path) do
-    path
-    |> Storage.key(@prefix)
-    |> Storage.get() || generate_css(path)
-  end
-
-  defp generate_css(path) do
     file_path = "#{@base_path}/#{path}.sass"
 
     with {:ok, sass} <- File.read(file_path),

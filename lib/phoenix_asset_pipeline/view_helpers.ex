@@ -55,12 +55,13 @@ defmodule PhoenixAssetPipeline.ViewHelpers do
   end
 
   def script_tag(_conn, path) do
-    {digest, integrity} = CoffeeScript.new(path)
+    {_, digest, integrity} = CoffeeScript.new(path)
 
     content_tag(:script, "",
       async: true,
+      crossorigin: "anonymous",
       src: "http://localhost:4001/js/#{path}-#{digest}.js",
-      integrity: integrity
+      integrity: "sha384-" <> integrity
     )
   end
 end

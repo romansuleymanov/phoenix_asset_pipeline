@@ -14,6 +14,7 @@ defmodule PhoenixAssetPipeline.Endpoint do
     end
     |> JavaScript.call([])
     |> Static.call(config())
+    |> Plug.Conn.send_resp(404, "Not found")
   end
 
   def __handler__(conn, opts) do
