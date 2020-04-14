@@ -9,13 +9,10 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   def base_path, do: @base_path
 
   def new(path) do
-    js_paths = Storage.get(:js_paths) || []
-
     %{content: _, digest: digest, integrity: integrity} =
-      case path in js_paths do
-        true -> Storage.get("js_#{path}")
-        false -> generate_js(path, js_paths)
-      end
+      path
+      |> Storage.key(@prefix)
+      |> Storage.get() || generate_js(path)
 
     %{digest: digest, integrity: "sha384-" <> integrity}
   end
@@ -24,7 +21,7 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
 
   defp generate_js(path, js_paths) do
     with {:ok, coffee} <- File.read("#{@base_path}/#{path}.coffee"),
-         js <- coffee do
+         {:ok, js} <- {:ok, coffee} do
       digest =
         js
         |> :erlang.md5()
@@ -35,10 +32,11 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
         |> :crypto.hash(js)
         |> Base.encode64()
 
-      Storage.put("js_#{path}", %{content: js, digest: digest, integrity: integrity})
-      Storage.put(:js_paths, [path | js_paths])
+      path
+      |> Storage.key(@prefix)
+      |> Storage.put(%{content: js, digest: digest, integrity: integrity})
 
-      %{content: js, digest: digest, integrity: integrity}
+      [digest, integrity]
     else
       {:error, msg} -> raise msg
     end
