@@ -55,7 +55,7 @@ defmodule PhoenixAssetPipeline.ViewHelpers do
   end
 
   def script_tag(_conn, path) do
-    [digest, integrity] = CoffeeScript.new(path)
+    {digest, integrity} = CoffeeScript.new(path)
 
     content_tag(:script, "",
       async: true,

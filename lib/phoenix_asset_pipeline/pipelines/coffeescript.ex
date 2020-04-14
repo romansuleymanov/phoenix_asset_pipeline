@@ -36,7 +36,7 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
       |> Storage.key(@prefix)
       |> Storage.put(%{content: js, digest: digest, integrity: integrity})
 
-      [digest, integrity]
+      {digest, integrity}
     else
       {:error, msg} -> raise msg
     end
