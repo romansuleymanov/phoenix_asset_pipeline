@@ -9,17 +9,17 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   def base_path, do: @base_path
 
   def new(path) do
-    %{content: _, digest: digest, integrity: integrity} =
+    %{digest: digest, integrity: integrity} =
       path
       |> Storage.key(@prefix)
       |> Storage.get() || generate_js(path)
 
-    %{digest: digest, integrity: "sha384-" <> integrity}
+    {digest, "sha384-" <> integrity}
   end
 
   def prefix, do: @prefix
 
-  defp generate_js(path, js_paths) do
+  defp generate_js(path) do
     with {:ok, coffee} <- File.read("#{@base_path}/#{path}.coffee"),
          {:ok, js} <- {:ok, coffee} do
       digest =
@@ -36,7 +36,7 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
       |> Storage.key(@prefix)
       |> Storage.put(%{content: js, digest: digest, integrity: integrity})
 
-      {digest, integrity}
+      %{content: js, digest: digest, integrity: integrity}
     else
       {:error, msg} -> raise msg
     end
