@@ -36,7 +36,7 @@ defmodule PhoenixAssetPipeline.Plugs.JavaScript do
     message =
       case reason do
         %{action: _action, path: _path, reason: :enoent} -> File.Error.message(reason)
-        %{message: message, plug_status: status} -> message
+        %{message: message, plug_status: _status} -> message
       end
 
     conn
