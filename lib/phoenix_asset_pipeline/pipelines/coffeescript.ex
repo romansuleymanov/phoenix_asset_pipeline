@@ -16,11 +16,22 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
 
   def prefix, do: @prefix
 
+  defp compile(coffee) do
+    # System.cmd("yarn", ["dlx", "rollup", "-f", "iife", "-i", "app.coffee", ""],
+    System.cmd("yarn", ["dlx", "rollup", "-v"],
+      cd: "assets/javascripts",
+      parallelism: true,
+      into: IO.stream(:stdio, :line)
+    )
+
+    {:ok, coffee}
+  end
+
   defp content(path) do
     file_path = "#{@base_path}/#{path}.coffee"
 
     with {:ok, coffee} <- File.read(file_path),
-         {:ok, js} <- {:ok, coffee} do
+         {:ok, js} <- compile(coffee) do
       digest =
         js
         |> :erlang.md5()
