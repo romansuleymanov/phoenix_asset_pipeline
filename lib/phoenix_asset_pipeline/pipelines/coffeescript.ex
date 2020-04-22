@@ -16,16 +16,7 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
 
   def prefix, do: @prefix
 
-  defp compile(coffee) do
-    # System.cmd("yarn", ["dlx", "rollup", "-f", "iife", "-i", "app.coffee", ""],
-    System.cmd("yarn", ["dlx", "rollup", "-v"],
-      cd: "assets/javascripts",
-      parallelism: true,
-      into: IO.stream(:stdio, :line)
-    )
-
-    {:ok, coffee}
-  end
+  defp compile(coffee), do: Coffee.compile(coffee)
 
   defp content(path) do
     file_path = "#{@base_path}/#{path}.coffee"
