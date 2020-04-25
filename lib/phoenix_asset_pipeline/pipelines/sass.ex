@@ -11,7 +11,7 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
   def new(path) do
     path
     |> Storage.key(@prefix)
-    |> Storage.get() || content(path)
+    |> Storage.get() || prepare_css(path)
   end
 
   def prefix, do: @prefix
@@ -23,7 +23,7 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
     |> Sass.compile(%{include_paths: [@base_path], is_indented_syntax: true, output_style: 3})
   end
 
-  defp content(path) do
+  defp prepare_css(path) do
     file_path = "#{@base_path}/#{path}.sass"
 
     with {:ok, sass} <- File.read(file_path),

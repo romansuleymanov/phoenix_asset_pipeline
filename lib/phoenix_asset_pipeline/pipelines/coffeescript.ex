@@ -11,39 +11,38 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   def new(path) do
     path
     |> Storage.key(@prefix)
-    |> Storage.get() || content(path)
+    |> Storage.get() || prepare_js(path)
   end
 
   def prefix, do: @prefix
 
-  defp compile(coffee), do: Coffee.compile(coffee)
+  defp compile(path) do
+    {js, _} =
+      System.cmd("yarn", ["rollup", "-c", "rollup.config.js", "-i", "javascripts/#{path}.coffee"],
+        cd: "assets"
+      )
 
-  defp content(path) do
-    file_path = "#{@base_path}/#{path}.coffee"
+    {:ok, js}
+  end
 
-    with {:ok, coffee} <- File.read(file_path),
-         {:ok, js} <- compile(coffee) do
-      digest =
-        js
-        |> :erlang.md5()
-        |> Base.encode16(case: :lower)
+  defp prepare_js(path) do
+    case compile(path) do
+      {:ok, js} ->
+        digest =
+          js
+          |> :erlang.md5()
+          |> Base.encode16(case: :lower)
 
-      integrity =
-        :sha384
-        |> :crypto.hash(js)
-        |> Base.encode64()
+        integrity =
+          :sha384
+          |> :crypto.hash(js)
+          |> Base.encode64()
 
-      path
-      |> Storage.key(@prefix)
-      |> Storage.put({js, digest, integrity})
+        path
+        |> Storage.key(@prefix)
+        |> Storage.put({js, digest, integrity})
 
-      {js, digest, integrity}
-    else
-      {:error, :enoent} ->
-        raise File.Error,
-          reason: :enoent,
-          action: "read file",
-          path: IO.chardata_to_string(file_path)
+        {js, digest, integrity}
 
       _ ->
         ""

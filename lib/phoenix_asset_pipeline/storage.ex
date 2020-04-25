@@ -4,7 +4,7 @@ defmodule PhoenixAssetPipeline.Storage do
   [:persistent_term](https://erlang.org/doc/man/persistent_term.html).
   """
 
-  def key(path, prefix), do: prefix <> path
+  def key(path, prefix), do: String.to_atom(prefix <> path)
 
   def drop(path, prefix) do
     path
@@ -13,8 +13,12 @@ defmodule PhoenixAssetPipeline.Storage do
       for(key <- key_list(prefix), do: :persistent_term.erase(key))
   end
 
-  defp key_list(prefix),
-    do: :maps.filter(&String.starts_with?(&1, prefix), :persistent_term.get())
+  def key_list(prefix),
+    do:
+      :lists.filter(
+        &String.starts_with?(&1 |> Atom.to_string(), prefix),
+        :persistent_term.get() |> Keyword.keys()
+      )
 
   defdelegate get(key, default \\ nil), to: :persistent_term
   defdelegate put(key, value), to: :persistent_term
