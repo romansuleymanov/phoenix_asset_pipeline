@@ -4,29 +4,20 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   alias PhoenixAssetPipeline.Storage
 
   @base_path "assets/javascripts"
-  @prefix "js_"
+  @prefix "phoenix_asset_pipeline_js_"
 
   def base_path, do: @base_path
 
   def new(path) do
     path
     |> Storage.key(@prefix)
-    |> Storage.get() || prepare_js(path)
+    |> Storage.get() || compile(path)
   end
 
   def prefix, do: @prefix
 
   defp compile(path) do
-    {js, _} =
-      System.cmd("yarn", ["rollup", "-c", "rollup.config.js", "-i", "javascripts/#{path}.coffee"],
-        cd: "assets"
-      )
-
-    {:ok, js}
-  end
-
-  defp prepare_js(path) do
-    case compile(path) do
+    case Coffee.compile("#{@base_path}/#{path}.coffeee") do
       {:ok, js} ->
         digest =
           js
@@ -43,6 +34,9 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
         |> Storage.put({js, digest, integrity})
 
         {js, digest, integrity}
+
+      {:error, error} ->
+        raise error
 
       _ ->
         ""

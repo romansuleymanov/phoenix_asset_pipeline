@@ -4,41 +4,33 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
   alias PhoenixAssetPipeline.Storage
 
   @base_path "assets/stylesheets"
-  @prefix "css_"
+  @prefix "phoenix_asset_pipeline_css_"
 
   def base_path, do: @base_path
 
   def new(path) do
     path
     |> Storage.key(@prefix)
-    |> Storage.get() || prepare_css(path)
+    |> Storage.get() || compile(path)
   end
 
   def prefix, do: @prefix
 
-  defp compile(""), do: {:ok, ""}
+  defp compile(path) do
+    case Sass.compile_file("#{@base_path}/#{path}.sass", %{
+           include_paths: [@base_path],
+           is_indented_syntax: true,
+           output_style: 3
+         }) do
+      {:ok, css} ->
+        path
+        |> Storage.key(@prefix)
+        |> Storage.put(css)
 
-  defp compile(sass) do
-    sass
-    |> Sass.compile(%{include_paths: [@base_path], is_indented_syntax: true, output_style: 3})
-  end
+        css
 
-  defp prepare_css(path) do
-    file_path = "#{@base_path}/#{path}.sass"
-
-    with {:ok, sass} <- File.read(file_path),
-         {:ok, css} <- compile(sass) do
-      path
-      |> Storage.key(@prefix)
-      |> Storage.put(css)
-
-      css
-    else
-      {:error, :enoent} ->
-        raise File.Error,
-          reason: :enoent,
-          action: "read file",
-          path: IO.chardata_to_string(file_path)
+      {:error, error} ->
+        raise error
 
       _ ->
         ""
