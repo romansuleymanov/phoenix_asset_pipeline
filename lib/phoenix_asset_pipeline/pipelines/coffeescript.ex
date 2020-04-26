@@ -37,9 +37,6 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
 
       {:error, error} ->
         raise error
-
-      _ ->
-        ""
     end
   end
 end

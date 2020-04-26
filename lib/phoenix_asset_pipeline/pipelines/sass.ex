@@ -31,9 +31,6 @@ defmodule PhoenixAssetPipeline.Pipelines.Sass do
 
       {:error, error} ->
         raise error
-
-      _ ->
-        ""
     end
   end
 end
