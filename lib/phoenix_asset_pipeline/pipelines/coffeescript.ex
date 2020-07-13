@@ -17,7 +17,7 @@ defmodule PhoenixAssetPipeline.Pipelines.CoffeeScript do
   def prefix, do: @prefix
 
   defp compile(path) do
-    case Coffee.compile("#{@base_path}/#{path}.coffeee") do
+    case Coffee.compile(Path.expand("#{@base_path}/#{path}.coffee")) do
       {:ok, js} ->
         digest =
           js

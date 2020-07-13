@@ -50,11 +50,11 @@ defmodule PhoenixAssetPipeline.ViewHelpers do
     img_tag("http://localhost:4001/img/#{path}")
   end
 
-  def style_tag(path) do
+  def style_tag(path, _html_opts \\ []) do
     content_tag(:style, {:safe, Sass.new(path)})
   end
 
-  def script_tag(_conn, path) do
+  def script_tag(_conn, path, _html_opts \\ []) do
     {_, digest, integrity} = CoffeeScript.new(path)
 
     content_tag(:script, "",

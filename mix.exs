@@ -46,7 +46,7 @@ defmodule PhoenixAssetPipeline.MixProject do
       {:coffee_compiler, "~> 0.1"},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.22", only: :dev, runtime: false},
       {:file_system, "~> 0.2"},
       {:phoenix, "~> 1.5.0"},
       {:phoenix_html, "~> 2.14"},
