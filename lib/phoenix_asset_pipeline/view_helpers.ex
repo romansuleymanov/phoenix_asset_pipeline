@@ -50,8 +50,8 @@ defmodule PhoenixAssetPipeline.ViewHelpers do
     img_tag("http://localhost:4001/img/#{path}")
   end
 
-  def style_tag(path, _html_opts \\ []) do
-    content_tag(:style, {:safe, Sass.new(path)})
+  def style_tag(path, html_opts \\ []) do
+    content_tag(:style, {:safe, Sass.new(path)}, html_opts)
   end
 
   def script_tag(_conn, path, _html_opts \\ []) do

@@ -16,7 +16,7 @@ defmodule PhoenixAssetPipeline.Storage do
   def key_list(prefix),
     do:
       :lists.filter(
-        &String.starts_with?(&1 |> Atom.to_string(), prefix),
+        &(is_atom(&1) and String.starts_with?(&1 |> Atom.to_string(), prefix)),
         :persistent_term.get() |> Keyword.keys()
       )
 
