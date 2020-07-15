@@ -46,21 +46,21 @@ defmodule PhoenixAssetPipeline.ViewHelpers do
   import Phoenix.HTML.Tag, only: [content_tag: 2, content_tag: 3, img_tag: 1]
   alias PhoenixAssetPipeline.Pipelines.{CoffeeScript, Sass}
 
-  def image_tag(_conn, path) do
-    img_tag("http://localhost:4001/img/#{path}")
+  def image_tag(conn, path) do
+    img_tag("#{conn.scheme}://#{conn.host}:4001/img/#{path}")
   end
 
   def style_tag(path, html_opts \\ []) do
     content_tag(:style, {:safe, Sass.new(path)}, html_opts)
   end
 
-  def script_tag(_conn, path, _html_opts \\ []) do
+  def script_tag(conn, path, _html_opts \\ []) do
     {_, digest, integrity} = CoffeeScript.new(path)
 
     content_tag(:script, "",
       async: true,
       crossorigin: "anonymous",
-      src: "http://localhost:4001/js/#{path}-#{digest}.js",
+      src: "#{conn.scheme}://#{conn.host}:4001/js/#{path}-#{digest}.js",
       integrity: "sha384-" <> integrity
     )
   end
