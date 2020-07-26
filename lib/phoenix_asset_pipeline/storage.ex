@@ -13,12 +13,11 @@ defmodule PhoenixAssetPipeline.Storage do
       for(key <- key_list(prefix), do: :persistent_term.erase(key))
   end
 
-  def key_list(prefix),
-    do:
-      :lists.filter(
-        &(is_atom(&1) and String.starts_with?(&1 |> Atom.to_string(), prefix)),
-        :persistent_term.get() |> Keyword.keys()
-      )
+  def key_list(prefix) do
+    Enum.filter(:persistent_term.get(), fn {key, _value} ->
+      is_atom(key) and String.starts_with?(Atom.to_string(key), prefix)
+    end)
+  end
 
   defdelegate get(key, default \\ nil), to: :persistent_term
   defdelegate put(key, value), to: :persistent_term
