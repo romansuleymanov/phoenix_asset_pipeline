@@ -18,6 +18,7 @@ defmodule PhoenixAssetPipeline.Storage do
       fn {key, _value} -> is_atom(key) and String.starts_with?(Atom.to_string(key), prefix) end,
       :persistent_term.get()
     )
+    |> Keyword.keys()
   end
 
   defdelegate get(key, default \\ nil), to: :persistent_term
