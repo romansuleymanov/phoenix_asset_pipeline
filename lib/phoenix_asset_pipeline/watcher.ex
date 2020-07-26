@@ -7,8 +7,7 @@ defmodule PhoenixAssetPipeline.Watcher do
   alias PhoenixAssetPipeline.Pipelines.{CoffeeScript, Sass}
 
   def init(_) do
-    {:ok, pid} =
-      FileSystem.start_link(dirs: ["assets/javascripts", "assets/stylesheets"], latency: 0)
+    {:ok, pid} = FileSystem.start_link(dirs: ["assets/javascripts", "assets/stylesheets"])
 
     FileSystem.subscribe(pid)
     {:ok, %{watcher_pid: pid}}

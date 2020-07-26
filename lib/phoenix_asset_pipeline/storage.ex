@@ -14,9 +14,10 @@ defmodule PhoenixAssetPipeline.Storage do
   end
 
   def key_list(prefix) do
-    Enum.filter(:persistent_term.get(), fn {key, _value} ->
-      is_atom(key) and String.starts_with?(Atom.to_string(key), prefix)
-    end)
+    :lists.filter(
+      fn {key, _value} -> is_atom(key) and String.starts_with?(Atom.to_string(key), prefix) end,
+      :persistent_term.get()
+    )
   end
 
   defdelegate get(key, default \\ nil), to: :persistent_term
