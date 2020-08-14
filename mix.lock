@@ -1,5 +1,4 @@
 %{
-  "brotli": {:hex, :brotli, "0.2.1", "3be84902b8c373f0aee126f53088b6f888cb7b0cd717bf1bb12fa3f31f633723", [:rebar3], [], "hexpm", "1269499efdd682872e482939a6a50c31843fac678a242c0ef287ab7bb529dd9e"},
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], [], "hexpm", "7af5c7e09fe1d40f76c8e4f9dd2be7cebd83909f31fee7cd0e9eadc567da8353"},
   "coffee_compiler": {:hex, :coffee_compiler, "0.1.2", "4e07c0c0525ca89df90171e89b1fe823e06897222e99ebe61394b2866eaafd47", [:mix], [{:execjs, "~> 2.0", [hex: :execjs, repo: "hexpm", optional: false]}], "hexpm", "187b0180dcc5570d477309ba7393b6ec7809912de8c9941d5cbd27266e309376"},
   "cowboy": {:hex, :cowboy, "2.8.0", "f3dc62e35797ecd9ac1b50db74611193c29815401e53bac9a5c0577bd7bc667d", [:rebar3], [{:cowlib, "~> 2.9.1", [hex: :cowlib, repo: "hexpm", optional: false]}, {:ranch, "~> 1.7.1", [hex: :ranch, repo: "hexpm", optional: false]}], "hexpm", "4643e4fba74ac96d4d152c75803de6fad0b3fa5df354c71afdd6cbeeb15fac8a"},
