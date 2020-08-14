@@ -13,7 +13,7 @@ defmodule PhoenixAssetPipeline.Plugs.Static do
 
     [
       at: at,
-      brotli: true,
+      brotli: false,
       from: from,
       gzip: true
     ]
