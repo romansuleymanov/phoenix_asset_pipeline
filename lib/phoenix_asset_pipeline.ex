@@ -7,9 +7,13 @@ defmodule PhoenixAssetPipeline do
   alias Phoenix.Endpoint.{Cowboy2Adapter, Cowboy2Handler}
 
   def start(_type, _args) do
-    upgrade_dispatch()
-    children = [Watcher | Cowboy2Adapter.child_specs(Endpoint, config())]
-    Supervisor.start_link(children, strategy: :one_for_one)
+    try do
+      upgrade_dispatch()
+      children = [Watcher | Cowboy2Adapter.child_specs(Endpoint, config())]
+      Supervisor.start_link(children, strategy: :one_for_one)
+    rescue
+      e in RuntimeError -> IO.puts("Just skip this error if application is already started: " <> e.message)
+    end
   end
 
   defp config do
